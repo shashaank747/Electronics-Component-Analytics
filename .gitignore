@@ -1,0 +1,34 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Power BI temporary files
+*.tmp
+*.bak
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# Raw and processed datasets
+02_Dataset/raw/*
+!02_Dataset/raw/.gitkeep
+
+02_Dataset/processed/*
+!02_Dataset/processed/.gitkeep
+
+# Credentials
+.env
+.env.*
+!.env.example
+
+# VS Code and OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
