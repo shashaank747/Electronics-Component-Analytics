@@ -1,33 +1,34 @@
 # Data Dictionary & Schema Specification
 
-## Synthetic Dataset Design
-- **Source**: 100% synthetic dataset created from scratch. No real company or college data is used.
-- **Currency**: Indian Rupee (INR - ₹).
-- **Unit of Measurement**: Standardized to **Piece** for all components so that total stock quantity aggregation is mathematically valid.
-- **Raw File**: `electronics_inventory_raw.xlsx` (6 distinct worksheets).
+## Dataset Overview
+- **Source File**: Microsoft Excel Workbook (`02_Dataset/raw/electronics_inventory_raw.xlsx`) containing 6 separate worksheets.
+- **Data Authenticity**: 100% synthetic dataset created specifically for this project. No real company or college data is used.
+- **Reporting Currency**: Indian Rupee (INR - ₹).
+- **Unit of Measurement (UoM)**: Standardized to **Piece** for all components so that total stock quantity aggregation is mathematically valid.
 
-### Planned Dataset Sizing
-| Table / Worksheet | Description | Planned Records |
-| :--- | :--- | :---: |
-| **Categories** | Component categories master | 8 |
-| **Components** | Component catalog master | 100 |
-| **Suppliers** | Supplier and vendor master | 10 |
-| **InventorySnapshots** | Monthly stock observations | 1,200 |
-| **PurchaseOrders** | Purchase order headers | 120 |
-| **PurchaseOrderDetails** | Component-level purchase order line items | 300 |
+### Dataset Sizing
+
+| Worksheet / Table | Description | Total Records | Primary Key | Key Relationships |
+| :--- | :--- | :---: | :---: | :--- |
+| **`Categories`** | Component categories master | **8** | `CategoryID` | Classifies `Components` (1:N) |
+| **`Components`** | Master component catalogue | **105** | `ComponentID` | Referenced by `InventorySnapshots` & `PurchaseOrderDetails` |
+| **`Suppliers`** | Vendor and supplier profiles | **50** | `SupplierID` | Fulfills `PurchaseOrders` (1:N) |
+| **`InventorySnapshots`** | Monthly stock observations | **1,260** | `SnapshotID` | Tracks `Components` across 12 monthly dates |
+| **`PurchaseOrders`** | Purchase order headers | **100** | `PurchaseOrderID` | Header for `PurchaseOrderDetails` (1:N) |
+| **`PurchaseOrderDetails`**| Purchase order line items | **125** | `POLineID` | Detailed parts ordered per PO |
 
 ---
 
 ## Component Categories
-The project covers eight primary electronic component categories:
+The catalog encompasses eight primary electronic component categories:
 1. **Passive Components** (Resistors, Capacitors, Inductors)
-2. **Diodes and LEDs** (Rectifier diodes, Zener diodes, LEDs)
-3. **Transistors and MOSFETs** (BJT, Power MOSFETs)
-4. **Integrated Circuits** (Operational Amplifiers, Timers, Voltage Regulators)
-5. **Sensors** (Temperature, Ultrasonic, Light, Motion sensors)
-6. **Microcontrollers and Development Boards** (Microcontrollers, Dev boards)
-7. **Connectors and Cables** (Terminal blocks, Headers, Cable assemblies)
-8. **Electromechanical Components** (Relays, Switches, Buzzers)
+2. **Diodes and LEDs** (Rectifier diodes, Zener diodes, signal diodes, LEDs)
+3. **Transistors and MOSFETs** (BJT, Power MOSFETs, Darlington pairs)
+4. **Integrated Circuits** (Operational Amplifiers, Timers, Voltage Regulators, Logic ICs)
+5. **Sensors** (Temperature, Ultrasonic, Light, Motion, Gas sensors)
+6. **Microcontrollers and Development Boards** (Microcontrollers, Dev boards, evaluation kits)
+7. **Connectors and Cables** (Terminal blocks, Pin headers, Cable assemblies, USB receptacles)
+8. **Electromechanical Components** (Relays, Switches, Buzzers, Cooling fans)
 
 ---
 
@@ -35,175 +36,160 @@ The project covers eight primary electronic component categories:
 
 ```mermaid
 erDiagram
-    Categories ||--o{ Components : "classifies"
-    Components ||--o{ InventorySnapshots : "tracked in"
-    Components ||--o{ PurchaseOrderDetails : "ordered in"
-    Suppliers ||--o{ PurchaseOrders : "fulfills"
-    PurchaseOrders ||--o{ PurchaseOrderDetails : "contains"
+    Categories ||--o{ Components : "classifies (1:N)"
+    Components ||--o{ InventorySnapshots : "tracked in (1:N)"
+    Components ||--o{ PurchaseOrderDetails : "ordered in (1:N)"
+    Suppliers ||--o{ PurchaseOrders : "fulfills (1:N)"
+    PurchaseOrders ||--o{ PurchaseOrderDetails : "contains (1:N)"
 
     Categories {
-        VARCHAR(10) CategoryID PK
-        VARCHAR(80) CategoryName UK
-        VARCHAR(200) CategoryDescription
+        Text CategoryID PK
+        Text CategoryName UK
+        Text CategoryDescription
     }
 
     Components {
-        VARCHAR(10) ComponentID PK
-        VARCHAR(120) ComponentName
-        VARCHAR(10) CategoryID FK
-        VARCHAR(20) UnitOfMeasure
-        DECIMAL(10-2) StandardUnitCost
-        INT ReorderLevel
-        VARCHAR(30) ConditionStatus
-        BOOLEAN RentEligible
+        Text ComponentID PK
+        Text ComponentName
+        Text CategoryID FK
+        Text UnitOfMeasure
+        Decimal StandardUnitCost
+        Integer ReorderLevel
+        Text ConditionStatus
+        Boolean RentEligible
     }
 
     Suppliers {
-        VARCHAR(10) SupplierID PK
-        VARCHAR(100) SupplierName
-        VARCHAR(60) City
-        VARCHAR(40) SupplierType
+        Text SupplierID PK
+        Text SupplierName
+        Text City
+        Text SupplierType
     }
 
     InventorySnapshots {
-        VARCHAR(15) SnapshotID PK
-        VARCHAR(10) ComponentID FK
-        DATE SnapshotDate
-        INT QuantityOnHand
-        VARCHAR(50) StorageLocation
+        Text SnapshotID PK
+        Text ComponentID FK
+        Date SnapshotDate
+        Integer QuantityOnHand
+        Text StorageLocation
     }
 
     PurchaseOrders {
-        VARCHAR(15) PurchaseOrderID PK
-        VARCHAR(10) SupplierID FK
-        DATE OrderDate
-        DATE ExpectedDeliveryDate
-        DATE ActualDeliveryDate
-        VARCHAR(20) OrderStatus
+        Text PurchaseOrderID PK
+        Text SupplierID FK
+        Date OrderDate
+        Date ExpectedDeliveryDate
+        Date ActualDeliveryDate
+        Text OrderStatus
     }
 
     PurchaseOrderDetails {
-        VARCHAR(15) POLineID PK
-        VARCHAR(15) PurchaseOrderID FK
-        VARCHAR(10) ComponentID FK
-        INT QuantityOrdered
-        DECIMAL(10-2) UnitPurchaseCost
+        Text POLineID PK
+        Text PurchaseOrderID FK
+        Text ComponentID FK
+        Integer QuantityOrdered
+        Decimal UnitPurchaseCost
     }
 ```
 
 ---
 
-## Exact Table Specifications
+## Table Specifications
 
-### Table 1 — Categories
-**Purpose**: Maintain the different electronic component categories.
+### Table 1: Categories
+**Purpose**: Maintain the electronic component categories.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `CategoryID` | `VARCHAR(10)` | **PK** | Unique identifier for category | `CAT001` |
-| `CategoryName` | `VARCHAR(80)` | **UNIQUE** | Descriptive category name | `Passive Components` |
-| `CategoryDescription` | `VARCHAR(200)` | — | Description of category scope | `Resistors, capacitors, and inductors` |
+| `CategoryID` | Text | **PK** | Unique identifier for category | `CAT001` |
+| `CategoryName` | Text | **UNIQUE** | Descriptive category name | `Passive Components` |
+| `CategoryDescription` | Text | — | Description of components within category | `Non-amplifying electronic components...` |
 
 ---
 
-### Table 2 — Components
-**Purpose**: Maintain the component master catalogue.
+### Table 2: Components
+**Purpose**: Maintain the master component catalog.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `ComponentID` | `VARCHAR(10)` | **PK** | Unique component identifier | `CMP001` |
-| `ComponentName` | `VARCHAR(120)` | — | Component descriptive name | `10k Ohm Resistor 1/4W` |
-| `CategoryID` | `VARCHAR(10)` | **FK** | Foreign key to `Categories(CategoryID)` | `CAT001` |
-| `UnitOfMeasure` | `VARCHAR(20)` | — | Unit of measure (`Piece`) | `Piece` |
-| `StandardUnitCost` | `DECIMAL(10,2)` | — | Reference cost (₹) for inventory valuation | `1.50` |
-| `ReorderLevel` | `INT` | — | Threshold quantity triggering reorder | `200` |
-| `ConditionStatus` | `VARCHAR(30)` | — | Condition (e.g. `New`, `Refurbished`) | `New` |
-| `RentEligible` | `BOOLEAN` | — | Eligible for commercial rental (`TRUE`/`FALSE`) | `FALSE` |
+| `ComponentID` | Text | **PK** | Unique component identifier | `CMP001` |
+| `ComponentName` | Text | — | Component descriptive name and specification | `10k Ohm 1/4W Metal Film Resistor 1%` |
+| `CategoryID` | Text | **FK** | Foreign key to `Categories(CategoryID)` | `CAT001` |
+| `UnitOfMeasure` | Text | — | Unit of measure (`Piece`) | `Piece` |
+| `StandardUnitCost` | Decimal (2 dec) | — | Benchmark reference cost in Rupee (₹) | `0.80` |
+| `ReorderLevel` | Integer | — | Minimum stock threshold triggering reorder | `500` |
+| `ConditionStatus` | Text | — | Physical condition (`New`, `Refurbished`) | `New` |
+| `RentEligible` | Boolean | — | Commercial rental eligibility (`TRUE` / `FALSE`) | `FALSE` |
 
-> **Valuation Note**: `StandardUnitCost` is the reference cost used for inventory valuation. It is separate from the actual purchase price recorded in purchase order details.
+> **Valuation Note**: `StandardUnitCost` is the benchmark cost used for inventory holding valuation. It is tracked separately from historical procurement costs recorded in `PurchaseOrderDetails`.
 
 ---
 
-### Table 3 — Suppliers
-**Purpose**: Maintain supplier information.
+### Table 3: Suppliers
+**Purpose**: Maintain vendor and supplier profiles.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `SupplierID` | `VARCHAR(10)` | **PK** | Unique supplier identifier | `SUP001` |
-| `SupplierName` | `VARCHAR(100)` | — | Fictional supplier name | `ElectroVibe Components Pvt Ltd` |
-| `City` | `VARCHAR(60)` | — | Location city | `Bengaluru` |
-| `SupplierType` | `VARCHAR(40)` | — | Supplier classification | `Authorized Distributor` |
+| `SupplierID` | Text | **PK** | Unique supplier identifier | `SUP001` |
+| `SupplierName` | Text | — | Fictional supplier company name | `ElectroVibe Components Pvt Ltd` |
+| `City` | Text | — | Supplier industrial hub / city | `Bengaluru` |
+| `SupplierType` | Text | — | Classification (`Authorized Distributor`, `Direct OEM`, etc.) | `Authorized Distributor` |
 
 ---
 
-### Table 4 — InventorySnapshots
-**Purpose**: Record the stock quantity of each component at monthly intervals.
+### Table 4: InventorySnapshots
+**Purpose**: Record monthly inventory observations per component across 2025.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `SnapshotID` | `VARCHAR(15)` | **PK** | Unique snapshot record identifier | `INV0001` |
-| `ComponentID` | `VARCHAR(10)` | **FK** | Foreign key to `Components(ComponentID)` | `CMP001` |
-| `SnapshotDate` | `DATE` | — | Snapshot observation date | `2025-01-31` |
-| `QuantityOnHand` | `INT` | — | Quantity in stock on snapshot date | `400` |
-| `StorageLocation` | `VARCHAR(50)` | — | Warehouse bin or rack code | `Bin-A01` |
+| `SnapshotID` | Text | **PK** | Unique snapshot observation identifier | `INV0001` |
+| `ComponentID` | Text | **FK** | Foreign key to `Components(ComponentID)` | `CMP001` |
+| `SnapshotDate` | Date (YYYY-MM-DD)| — | Monthly observation date (end of month) | `2025-01-31` |
+| `QuantityOnHand` | Integer | — | Counted physical stock in pieces | `1,289` |
+| `StorageLocation` | Text | — | Assigned warehouse bin or aisle | `Aisle-A-Bin01` |
 
-> **Uniqueness Constraint**: A composite unique constraint on `(ComponentID, SnapshotDate)` prevents duplicate monthly observations per component.
-
-#### Example Snapshot Progression:
-| SnapshotID | ComponentID | SnapshotDate | QuantityOnHand | StorageLocation |
-| :--- | :--- | :---: | :---: | :--- |
-| `INV0001` | `CMP001` | 2025-01-31 | 400 | Bin-A01 |
-| `INV0002` | `CMP001` | 2025-02-28 | 350 | Bin-A01 |
-| `INV0003` | `CMP001` | 2025-03-31 | 320 | Bin-A01 |
+> **Snapshot Integrity Rule**: Strictly one observation per component per month, spanning all 12 months in 2025 (105 components × 12 months = 1,260 rows).
 
 ---
 
-### Table 5 — PurchaseOrders
-**Purpose**: Maintain purchase order information.
+### Table 5: PurchaseOrders
+**Purpose**: Maintain purchase order headers and fulfillment tracking.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `PurchaseOrderID` | `VARCHAR(15)` | **PK** | Unique purchase order identifier | `PO001` |
-| `SupplierID` | `VARCHAR(10)` | **FK** | Foreign key to `Suppliers(SupplierID)` | `SUP001` |
-| `OrderDate` | `DATE` | — | Date the order was placed | `2025-01-10` |
-| `ExpectedDeliveryDate` | `DATE` | — | Expected date of delivery | `2025-01-18` |
-| `ActualDeliveryDate` | `DATE` | Nullable | Actual receipt date (nullable) | `2025-01-17` |
-| `OrderStatus` | `VARCHAR(20)` | — | Status (`Delivered`, `Pending`, `Cancelled`) | `Delivered` |
+| `PurchaseOrderID` | Text | **PK** | Unique purchase order identifier | `PO001` |
+| `SupplierID` | Text | **FK** | Foreign key to `Suppliers(SupplierID)` | `SUP034` |
+| `OrderDate` | Date (YYYY-MM-DD)| — | Date the PO was placed | `2025-01-05` |
+| `ExpectedDeliveryDate`| Date (YYYY-MM-DD)| — | Committed vendor delivery date | `2025-01-19` |
+| `ActualDeliveryDate` | Date (YYYY-MM-DD)| Nullable | Physical receipt date (*blank for Pending/Cancelled*) | `2025-01-13` |
+| `OrderStatus` | Text | — | Order status (`Delivered`, `Pending`, `Cancelled`) | `Delivered` |
 
-> **Order Status Integrity Rules**:
+> **Order Fulfillment Business Rules**:
 > - Allowed statuses: `Delivered`, `Pending`, `Cancelled`.
-> - For `Delivered` orders, `ActualDeliveryDate` must exist.
-> - For `Pending` and `Cancelled` orders, `ActualDeliveryDate` will be blank (`NULL`).
+> - For `Delivered` orders, `ActualDeliveryDate` is always populated.
+> - For `Pending` and `Cancelled` orders, `ActualDeliveryDate` is empty (`null`).
 
 ---
 
-### Table 6 — PurchaseOrderDetails
-**Purpose**: Store the component-level details of each purchase order.
+### Table 6: PurchaseOrderDetails
+**Purpose**: Store component-level line items for each purchase order.
 
-| Column | Data Type | Key | Description | Example |
+| Column | Data Type | Constraint | Description | Example |
 | :--- | :--- | :---: | :--- | :--- |
-| `POLineID` | `VARCHAR(15)` | **PK** | Unique purchase order line item ID | `POL001` |
-| `PurchaseOrderID` | `VARCHAR(15)` | **FK** | Foreign key to `PurchaseOrders(PurchaseOrderID)` | `PO001` |
-| `ComponentID` | `VARCHAR(10)` | **FK** | Foreign key to `Components(ComponentID)` | `CMP001` |
-| `QuantityOrdered` | `INT` | — | Number of units ordered | `500` |
-| `UnitPurchaseCost` | `DECIMAL(10,2)` | — | Actual negotiated price per unit (₹) | `1.80` |
-
-#### Example Line Records:
-| POLineID | PurchaseOrderID | ComponentID | QuantityOrdered | UnitPurchaseCost |
-| :--- | :--- | :--- | :---: | :---: |
-| `POL001` | `PO001` | `CMP001` | 500 | 1.80 |
-| `POL002` | `PO001` | `CMP005` | 100 | 12.50 |
-| `POL003` | `PO002` | `CMP001` | 300 | 1.75 |
+| `POLineID` | Text | **PK** | Unique line item identifier | `POL0001` |
+| `PurchaseOrderID` | Text | **FK** | Foreign key to `PurchaseOrders(PurchaseOrderID)` | `PO001` |
+| `ComponentID` | Text | **FK** | Foreign key to `Components(ComponentID)` | `CMP082` |
+| `QuantityOrdered` | Integer | — | Number of units ordered in pieces | `200` |
+| `UnitPurchaseCost` | Decimal (2 dec) | — | Actual negotiated purchase price in Rupee (₹) | `7.24` |
 
 ---
 
-## Relational Multiplicity Table
+## Relational Cardinality & Model Mapping
 
-| Parent Table | Child Table | Relationship | Cardinality | Foreign Key |
-| :--- | :--- | :---: | :---: | :--- |
-| `Categories` | `Components` | One-to-many | 1 : N | `Components.CategoryID` |
-| `Components` | `InventorySnapshots` | One-to-many | 1 : N | `InventorySnapshots.ComponentID` |
-| `Components` | `PurchaseOrderDetails` | One-to-many | 1 : N | `PurchaseOrderDetails.ComponentID` |
-| `Suppliers` | `PurchaseOrders` | One-to-many | 1 : N | `PurchaseOrders.SupplierID` |
-| `PurchaseOrders` | `PurchaseOrderDetails` | One-to-many | 1 : N | `PurchaseOrderDetails.PurchaseOrderID` |
-
+| Parent Table | Child Table | Relationship Type | Foreign Key | Cross-Filter Direction in Power BI |
+| :--- | :--- | :---: | :--- | :---: |
+| `Categories` | `Components` | 1-to-Many ($1 : N$) | `Components[CategoryID]` | Single (`Categories` filters `Components`) |
+| `Components` | `InventorySnapshots` | 1-to-Many ($1 : N$) | `InventorySnapshots[ComponentID]` | Single (`Components` filters `Snapshots`) |
+| `Components` | `PurchaseOrderDetails` | 1-to-Many ($1 : N$) | `PurchaseOrderDetails[ComponentID]` | Single (`Components` filters `Details`) |
+| `Suppliers` | `PurchaseOrders` | 1-to-Many ($1 : N$) | `PurchaseOrders[SupplierID]` | Single (`Suppliers` filters `Orders`) |
+| `PurchaseOrders` | `PurchaseOrderDetails` | 1-to-Many ($1 : N$) | `PurchaseOrderDetails[PurchaseOrderID]` | Single (`PurchaseOrders` filters `Details`) |

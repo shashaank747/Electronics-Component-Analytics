@@ -10,7 +10,7 @@ Understand what components the business has in stock and evaluate inventory heal
 - **Inventory Value**: Valuation of stock on hand using standard unit costs.
 - **Category-Wise Stock Distribution**: Quantity and valuation breakdown across 8 component categories.
 - **Component Condition**: Tracking new, refurbished, or used inventory status.
-- **Rental Availability**: Identification of components available for commercial rental.
+- **Rental Availability**: Identification of components eligible for commercial rental.
 - **Monthly Stock-Level Snapshots**: Trend analysis of historical monthly inventory levels.
 
 ### Module B: Procurement Analytics
@@ -28,7 +28,7 @@ Understand what the business is ordering and how suppliers perform:
 
 ## Business Questions
 
-Our SQL queries and Power BI reports will answer these specific business questions:
+Our Power Query transformations, DAX measures, and Power BI dashboards will answer these specific business questions:
 
 ### Inventory Questions
 1. How many distinct electronic components are available?

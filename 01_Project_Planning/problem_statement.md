@@ -19,4 +19,4 @@ When inventory and procurement data is maintained across disconnected spreadshee
 - **Supplier Delivery Delays**: Monitoring vendor lead times, pending orders, and delivery delays demands manual tracking across scattered order logs.
 
 ## Proposed Solution
-The project proposes an integrated Data Analytics and Business Intelligence solution that organizes inventory and procurement information into structured relational datasets, analyzes it using SQL and Python, and presents actionable insights through an interactive Power BI dashboard.
+The project proposes an integrated Data Analytics and Business Intelligence solution that organizes inventory and procurement information into structured relational tables in Microsoft Excel, cleanses and shapes the data using Power Query, models star-schema relationships in Microsoft Power BI, and presents actionable insights through interactive dashboards.

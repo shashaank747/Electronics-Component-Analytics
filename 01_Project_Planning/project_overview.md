@@ -11,18 +11,28 @@ A fictional electronics component distributor or small electronics manufacturing
 
 ## Primary Users
 - **Inventory Managers**: Monitoring stock availability, inventory health, holding valuation, reorder thresholds, and warehouse allocation.
-- **Procurement Managers**: Evaluating purchasing activity, supplier delivery reliability, cost variations, lead times, and order statuses.
+- **Procurement Managers**: Evaluating purchasing activity, supplier delivery reliability, cost variations, lead times, and order fulfillment statuses.
 
 ## Purpose
 Analyze electronic component inventory and procurement records to provide actionable visibility into:
 1. Stock availability and inventory levels across component categories.
-2. Inventory valuation and capital allocation.
+2. Inventory valuation and capital allocation in Indian Rupee (INR - ₹).
 3. Purchasing volume, spending patterns, and supplier price variance.
 4. Supplier delivery performance, lead times, and on-time fulfillment rates.
 
 ## Synthetic Data Disclaimer
 All records in this project are 100% synthetic and generated specifically for demonstration purposes. The project demonstrates a production-grade analytical solution using a simulated business scenario; it does not claim to solve an actual company's operational problem.
 
-## Analytical Scope Summary
+## Technology Stack
+
+| Purpose | Technology |
+| :--- | :--- |
+| **Source Data** | Microsoft Excel |
+| **Data Cleaning and ETL** | Power Query |
+| **Data Modelling** | Microsoft Power BI |
+| **Calculations** | DAX (Data Analysis Expressions) |
+| **Visualization** | Microsoft Power BI |
+
+## Analytical Modules Summary
 - **Module A: Inventory Analytics**: Component stock quantities, stock levels against reorder thresholds, zero-stock and low-stock components, inventory valuation, category-wise distribution, component condition, rental availability, and monthly stock-level snapshots.
 - **Module B: Procurement Analytics**: Purchase order quantities, purchase order value, purchasing trends, supplier-wise order value, component-wise purchase costs, pending and cancelled orders, delivery lead time, and on-time delivery percentage.
