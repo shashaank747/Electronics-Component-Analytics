@@ -55,7 +55,7 @@ erDiagram
         DECIMAL(10-2) StandardUnitCost
         INT ReorderLevel
         VARCHAR(30) ConditionStatus
-        BOOLEAN RentAvailable
+        BOOLEAN RentEligible
     }
 
     Suppliers {
@@ -118,7 +118,7 @@ erDiagram
 | `StandardUnitCost` | `DECIMAL(10,2)` | — | Reference cost (₹) for inventory valuation | `1.50` |
 | `ReorderLevel` | `INT` | — | Threshold quantity triggering reorder | `200` |
 | `ConditionStatus` | `VARCHAR(30)` | — | Condition (e.g. `New`, `Refurbished`) | `New` |
-| `RentAvailable` | `BOOLEAN` | — | Eligible for commercial rental (`TRUE`/`FALSE`) | `FALSE` |
+| `RentEligible` | `BOOLEAN` | — | Eligible for commercial rental (`TRUE`/`FALSE`) | `FALSE` |
 
 > **Valuation Note**: `StandardUnitCost` is the reference cost used for inventory valuation. It is separate from the actual purchase price recorded in purchase order details.
 
@@ -206,3 +206,4 @@ erDiagram
 | `Components` | `PurchaseOrderDetails` | One-to-many | 1 : N | `PurchaseOrderDetails.ComponentID` |
 | `Suppliers` | `PurchaseOrders` | One-to-many | 1 : N | `PurchaseOrders.SupplierID` |
 | `PurchaseOrders` | `PurchaseOrderDetails` | One-to-many | 1 : N | `PurchaseOrderDetails.PurchaseOrderID` |
+
