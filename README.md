@@ -7,93 +7,175 @@
 [![Currency: INR (₹)](https://img.shields.io/badge/Currency-INR%20(%E2%82%B9)-success.svg)](02_Dataset/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
-An end-to-end Data Analytics and Business Intelligence project simulating an electronics component distributor and small-scale electronics manufacturing enterprise. The project consolidates disconnected inventory tracking records and procurement logs from **Microsoft Excel**, cleanses and transforms the data using **Power Query**, models star-schema relationships in **Microsoft Power BI**, and delivers executive decision-support dashboards powered by **DAX**.
+An end-to-end Data Analytics and Business Intelligence project focused on component inventory management, stock health, and procurement analytics within the electronics industry.
 
 ---
 
-## Table of Contents
-- [Executive Summary](#executive-summary)
-- [Technology Stack](#technology-stack)
-- [Problem Statement & Proposed Solution](#problem-statement--proposed-solution)
-- [End-to-End Workflow & Architecture](#end-to-end-workflow--architecture)
-- [Relational Schema & Dataset Overview](#relational-schema--dataset-overview)
-- [Analytical Modules & 18 Business Questions](#analytical-modules--18-business-questions)
-- [Core KPI Definitions & DAX Formulas](#core-kpi-definitions--dax-formulas)
-- [Power BI Dashboard Pages](#power-bi-dashboard-pages)
-- [Key Business Insights & Findings](#key-business-insights--findings)
-- [Strategic Management Recommendations](#strategic-management-recommendations)
-- [Repository Structure](#repository-structure)
-- [Quickstart & Replication Guide](#quickstart--replication-guide)
-- [Project Scope & Deliverables](#project-scope--deliverables)
+## 1. Project Title
+**Electronics Component Inventory & Procurement Analytics**
 
 ---
 
-## Executive Summary
+## 2. Project Overview
+This project simulates the operational environment of a fictional electronics component distributor and small-scale electronics manufacturing business. The enterprise manages an extensive catalog of electronic components—ranging from basic passive devices (resistors, capacitors) to discrete semiconductors, integrated circuits, environmental sensors, microcontrollers, and interconnects.
 
-| Attribute | Specification |
+The solution consolidates disconnected operational spreadsheets from **Microsoft Excel**, cleanses and transforms the data using **Power Query**, constructs a star/snowflake dimensional model in **Microsoft Power BI Desktop**, evaluates operational KPIs using **DAX**, and presents executive decision-support insights through interactive dashboard pages.
+
+---
+
+## 3. Executive Summary
+
+| Project Dimension | Specification |
 | :--- | :--- |
 | **Project Type** | End-to-end Data Analytics & Business Intelligence Solution |
 | **Industry Scenario** | Fictional Electronics Component Distributor & Small Manufacturing Enterprise |
 | **Primary Users** | **Inventory Managers** & **Procurement Managers** |
 | **Reporting Currency**| Indian Rupee (**INR - ₹**) |
 | **Unit of Measurement**| **Piece** (standardized across all component categories) |
-| **Data Authenticity** | **100% Synthetic** (Relational dataset created from scratch for simulation) |
+| **Data Authenticity** | **100% Synthetic Data** (Relational dataset created from scratch for simulation) |
+| **Operational Period** | Calendar Year **2025** |
 | **Core Architecture** | Microsoft Excel $\rightarrow$ Power Query $\rightarrow$ Power BI Data Model $\rightarrow$ DAX Measures $\rightarrow$ Dashboards |
 
 ---
 
-## Technology Stack
+## 4. Business Scenario
+Consider an electronics manufacturing and distribution business managing thousands of electronic parts used across printed circuit board (PCB) assemblies, finished electronic products, and control boards.
 
-This project is built strictly using the modern Microsoft Business Intelligence ecosystem:
+For example, when producing an electronic control unit, the assembly line requires synchronized availability of:
+- Microcontrollers & evaluation kits
+- Precision resistors & low-ESR capacitors
+- Sensing modules (temperature, ultrasonic, motion)
+- Linear voltage regulators & operational amplifiers
+- Interconnect headers, terminal blocks, and relays
 
-| Purpose | Technology | Implementation Details |
-| :--- | :--- | :--- |
-| **Source Data** | Microsoft Excel | Structured relational workbook (`electronics_inventory_raw.xlsx`) across 6 worksheets |
-| **Data Cleaning and ETL** | Power Query | Automated M-language transformations, type casting, date normalization, null handling |
-| **Data Modelling** | Microsoft Power BI | Star/snowflake schema design, 1-to-many single-direction relationships, conformed dimensions |
-| **Calculations** | DAX | Calculated measures for valuation, safety stock alerts, lead time, and delivery reliability |
-| **Visualization** | Microsoft Power BI | Executive dashboards, card KPIs, trend lines, matrix breakdowns, interactive slicers |
-
----
-
-## Problem Statement & Proposed Solution
-
-### The Challenge
-Electronics businesses manage thousands of discrete and integrated components across categories like resistors, capacitors, power semiconductors, sensors, microcontrollers, and electromechanical parts. 
-
-When operational records are maintained in isolated spreadsheets:
-- **Stockout & Shortage Risks**: Identifying components below safety thresholds or experiencing zero stock requires reactive manual audits, leading to production line halts.
-- **Inaccurate Inventory Valuation**: Calculating true inventory carrying value across volatile parts categories is slow and error-prone.
-- **Uncontrolled Procurement Spend**: Comparing purchase price variance across multiple vendors for identical parts is difficult without centralized purchasing analytics.
-- **Supplier Delivery Bottlenecks**: Tracking supplier fulfillment delays, pending orders, and delivery lead times is time-consuming.
-
-### Proposed Solution
-This project implements an integrated analytical pipeline:
-1. **Relational Data Management**: Six normalized tables maintained in a structured Microsoft Excel workbook.
-2. **Power Query ETL**: Automated data ingestion, cleansing, type casting, date normalization, and referential validation.
-3. **Power BI Data Modelling**: Star/snowflake schema design with single-direction filter propagation and conformed dimensions.
-4. **DAX KPI Engine**: Robust measures for valuation, safety stock alerts, supplier lead time, and on-time fulfillment rates.
-5. **Interactive Executive Dashboards**: Role-tailored dashboards for Inventory and Procurement leadership with dynamic cross-filtering and drill-through capabilities.
+To avoid production stoppages, the company must maintain adequate stock buffers. Simultaneously, it purchases replenishment parts from diverse commercial suppliers across India, with varying unit pricing and delivery lead times. The business requires operational visibility into two core domains:
+1. **Inventory Management**: Stock availability, reorder alerts, stockout mitigation, and capital holding valuation.
+2. **Procurement Management**: Purchase order tracking, spend concentration, delivery turnaround times, and vendor reliability.
 
 ---
 
-## End-to-End Workflow & Architecture
+## 5. Problem Statement
 
-```mermaid
-flowchart TD
-    A["Microsoft Excel Source Workbook<br/>electronics_inventory_raw.xlsx (6 Worksheets)"]
-    --> B["Power Query ETL Pipeline<br/>Data Cleaning, Type Casting & Referential Checks"]
-    --> C["Power BI Data Model<br/>Star / Snowflake Schema Relationships"]
-    --> D["DAX Calculations & KPI Engine<br/>Valuation, Stock Alerts, Lead Time & OTD %"]
-    --> E["Interactive Power BI Dashboards<br/>Inventory & Procurement Reporting"]
-    --> F["Business Insights & Strategic Recommendations<br/>Working Capital & Supplier Optimization"]
-```
+When operational data is maintained in isolated, manual spreadsheets across separate departments:
+
+### Inventory-Related Challenges
+- **Low-Stock Visibility**: Identifying parts that fall below safety reorder thresholds requires manual comparison across 105 part numbers.
+- **Stockout Risks**: Components that run out of stock (`QuantityOnHand = 0`) are caught reactively after assembly lines halt.
+- **Inaccurate Valuation**: Calculating the monetary carrying value of physical inventory across changing stock levels is slow and prone to errors.
+- **Category Imbalance**: Managers cannot easily see whether capital is trapped in slow-moving microcontrollers or distributed effectively.
+- **Monthly Trajectory Gaps**: Understanding inventory progression across periodic monthly snapshots requires tedious manual compilation.
+- **Obscured Rental Assets**: Prototyping development platforms eligible for commercial rental cannot be readily identified.
+
+### Procurement-Related Challenges
+- **Scattered Purchase Orders**: Total purchasing commitments and order pipelines are difficult to track.
+- **Unclear Procurement Spend**: Summing purchase order commitment values while excluding cancelled orders is cumbersome.
+- **Vendor Concentration Risks**: Management lacks visibility into which suppliers receive the highest purchasing budget.
+- **Order Frequency vs Volume**: The business struggles to distinguish frequently reordered parts from bulk purchases.
+- **Delivery Lead-Time Delays**: Turnaround times between order placement and receipt date are not systematically monitored.
+- **Unmeasured Delivery Reliability**: Supplier On-Time Delivery rates (OTD %) are untracked.
+- **Purchase Price Variance**: The business cannot compare pricing across different vendors for identical components.
 
 ---
 
-## Relational Schema & Dataset Overview
+## 6. Proposed Solution
+The project delivers an interactive Power BI solution that integrates operational records from a structured Excel workbook:
+1. **Source Data Management (Excel)**: Six normalized worksheets modeling categories, components, suppliers, monthly inventory snapshots, purchase orders, and line items.
+2. **Automated ETL (Power Query)**: Ingests, normalizes, casts explicit data types, and validates referential keys.
+3. **Dimensional Modelling (Power BI)**: Establishes a star/snowflake schema with single-direction filter propagation.
+4. **Analytical Calculation Engine (DAX)**: Calculates inventory valuation, stockout alerts, lead times, and on-time fulfillment rates.
+5. **Interactive Executive Dashboards**: Visualizes KPIs through multi-page dashboards equipped with slicers, cross-filtering, and drill-downs.
 
-The dataset is organized across **6 normalized tables** stored within [`02_Dataset/raw/electronics_inventory_raw.xlsx`](02_Dataset/raw/electronics_inventory_raw.xlsx):
+---
+
+## 7. Project Objectives
+1. Eliminate manual spreadsheet analysis through an automated BI reporting pipeline.
+2. Enable proactive inventory control with instant low-stock and zero-stock alerts.
+3. Deliver dynamic inventory holding valuation in Indian Rupee (INR - ₹).
+4. Benchmark supplier delivery performance via lead time and On-Time Delivery % (OTD).
+5. Expose purchase price variances across vendors to strengthen procurement negotiations.
+
+---
+
+## 8. Analytical Modules
+
+### Module A: Inventory Analytics (For Inventory Managers)
+- Component catalog breadth (105 distinct parts).
+- Recorded stock quantity across components for selected snapshot dates.
+- Category-wise stock volume distribution across 8 component categories.
+- Early-warning low-stock alerts (`0 < QuantityOnHand < ReorderLevel`).
+- Immediate zero-stock alerts (`QuantityOnHand = 0`).
+- Inventory holding valuation based on standard unit cost in INR (₹).
+- Capital allocation breakdown across categories.
+- Monthly stock quantity trends across 12 snapshot periods in 2025.
+- Tracking of rental-eligible components.
+
+### Module B: Procurement Analytics (For Procurement Managers)
+- Total purchase orders issued across 2025 (100 POs).
+- Net committed procurement spend across non-cancelled purchase orders.
+- Supplier spend concentration across 50 registered vendors.
+- Frequently procured components and total pieces ordered.
+- Monthly procurement expenditure trajectory.
+- Order fulfillment status breakdown (Delivered: 80, Pending: 12, Cancelled: 8).
+- Average delivery lead time in calendar days for fulfilled deliveries.
+- Supplier On-Time Delivery Rate (OTD %).
+- Purchase price variance analysis across suppliers for identical parts.
+
+---
+
+## 9. Business Requirements
+
+The solution answers 18 specific business questions:
+
+### Inventory Questions
+1. **Total Components**: How many distinct electronic components are maintained in the component catalogue? *(105 components)*
+2. **Total Stock Quantity**: What is the recorded stock quantity across the components for the selected inventory snapshot?
+3. **Category-wise Stock Distribution**: Which electronic component categories contain the highest stock quantities?
+4. **Low Stock Components**: Which components have a stock quantity below their respective reorder levels? (`QuantityOnHand > 0 && QuantityOnHand < ReorderLevel`)
+5. **Zero Stock Components**: Which components have zero recorded stock? (`QuantityOnHand = 0`)
+6. **Inventory Valuation**: What is the estimated monetary value of the inventory? (`QuantityOnHand × StandardUnitCost` in ₹)
+7. **Category-wise Inventory Valuation**: Which component categories account for the highest inventory value?
+8. **Monthly Stock Trend**: How do recorded stock quantities change across the monthly inventory snapshots?
+9. **Rental Eligibility**: How many components are marked as eligible for rental programmes?
+
+### Procurement Questions
+1. **Total Purchase Orders**: How many purchase orders were issued during the operational year? *(100 POs)*
+2. **Procurement Value**: What is the total value of non-cancelled purchase orders? (`QuantityOrdered × UnitPurchaseCost`)
+3. **Supplier-wise Procurement Value**: Which suppliers account for the highest purchasing value?
+4. **Frequently Procured Components**: Which electronic components appear most frequently in purchase order line items?
+5. **Monthly Procurement Trend**: How does procurement value change across months?
+6. **Purchase Order Status**: What proportion of purchase orders are Delivered (80%), Pending (12%), or Cancelled (8%)?
+7. **Average Delivery Lead Time**: How many days does a supplier take to deliver an order? (`ActualDeliveryDate - OrderDate`)
+8. **On-Time Delivery Rate**: What percentage of delivered orders arrived on or before their expected delivery date?
+9. **Supplier Price Comparison**: How do suppliers differ in the purchase prices they offer for identical components?
+
+---
+
+## 10. Dataset Overview
+
+- **Source File**: [`02_Dataset/raw/electronics_inventory_raw.xlsx`](02_Dataset/raw/electronics_inventory_raw.xlsx)
+- **Data Authenticity**: **100% Synthetic Data**.
+- **Reporting Currency**: Indian Rupee (**INR - ₹**).
+- **Unit of Measurement**: **Piece** (standardized across all items).
+- **Operational Horizon**: Calendar year **2025**.
+
+---
+
+## 11. Excel Workbook Structure
+
+The source workbook contains six relational worksheets:
+
+| Worksheet | Contents | Row Count | Primary Key | Key Relationships |
+| :--- | :--- | :---: | :---: | :--- |
+| **`Categories`** | Component category master catalog | **8** | `CategoryID` | Classifies `Components` (1:N) |
+| **`Components`** | Master electronic component catalog | **105** | `ComponentID` | Referenced by `Snapshots` & `Details` (1:N) |
+| **`Suppliers`** | Vendor profiles across Indian industrial hubs | **50** | `SupplierID` | Fulfills `PurchaseOrders` (1:N) |
+| **`InventorySnapshots`** | Monthly stock observations (12 dates in 2025) | **1,260** | `SnapshotID` | Tracks `Components` across time |
+| **`PurchaseOrders`** | Purchase order headers and fulfillment dates | **100** | `PurchaseOrderID` | Header for `PurchaseOrderDetails` (1:N) |
+| **`PurchaseOrderDetails`**| Component line items per purchase order | **125** | `POLineID` | Detailed ordered quantities & prices |
+
+---
+
+## 12. Data Dictionary Summary
 
 ```mermaid
 erDiagram
@@ -153,52 +235,40 @@ erDiagram
     }
 ```
 
-### Table Specifications & Live Record Counts
-
-| # | Table Name | Record Count | Primary Key | Foreign Keys | Role / Contents |
-| :-: | :--- | :---: | :---: | :---: | :--- |
-| 1 | [**`Categories`**](02_Dataset/data_dictionary.md#table-1-categories) | **8** | `CategoryID` | — | Component category master catalog |
-| 2 | [**`Components`**](02_Dataset/data_dictionary.md#table-2-components) | **105** | `ComponentID` | `CategoryID` | Electronic parts catalog with standard unit costs in Rupee (₹) |
-| 3 | [**`Suppliers`**](02_Dataset/data_dictionary.md#table-3-suppliers) | **50** | `SupplierID` | — | Vendor profiles across Indian industrial hubs |
-| 4 | [**`InventorySnapshots`**](02_Dataset/data_dictionary.md#table-4-inventorysnapshots) | **1,260** | `SnapshotID` | `ComponentID` | Monthly stock levels (105 parts × 12 months in 2025) |
-| 5 | [**`PurchaseOrders`**](02_Dataset/data_dictionary.md#table-5-purchaseorders) | **100** | `PurchaseOrderID` | `SupplierID` | Order headers (Delivered: 80, Pending: 12, Cancelled: 8) |
-| 6 | [**`PurchaseOrderDetails`**](02_Dataset/data_dictionary.md#table-6-purchaseorderdetails) | **125** | `POLineID` | `PurchaseOrderID`, `ComponentID` | Order line items with negotiated purchase prices (₹) |
+Detailed column specifications and value constraints are documented in [**`02_Dataset/data_dictionary.md`**](02_Dataset/data_dictionary.md).
 
 ---
 
-## Analytical Modules & 18 Business Questions
+## 13. Power Query ETL Workflow
 
-### Module A: Inventory Analytics (For Inventory Managers)
-Focuses on warehouse stock availability, stockout risks, holding valuation, and category distribution:
+Power Query extracts the six worksheets, enforces data quality rules, and prepares the datasets for Power BI:
+- **Header Promotion**: Promoted first row of each worksheet to column headers.
+- **Text Normalization**: Trimmed whitespace and standardized case formatting across names and descriptions.
+- **Explicit Data Typing**: Explicitly cast text, whole number, decimal number, date, and boolean types.
+- **Controlled Null Handling**: Preserved `null` values for `ActualDeliveryDate` in `Pending` and `Cancelled` orders without injecting false dates or zeros.
+- **Referential Integrity**: Validated foreign key mappings between parent dimensions and child facts.
 
-1. **Catalog Breadth**: How many distinct electronic components are actively managed? *(105 components)*
-2. **Total Stock Volume**: What is the total aggregate inventory quantity on hand?
-3. **Category Concentration**: Which component categories hold the highest stock volumes?
-4. **Reorder Threshold Alerts**: Which specific components are currently below their reorder points?
-5. **Stockout Incident Tracking**: Which components have zero stock and represent immediate shortage risks?
-6. **Total Inventory Valuation**: What is the total monetary holding value of inventory in INR (₹)?
-7. **High-Value Categories**: Which component categories account for the largest capital allocation?
-8. **Monthly Stock Trajectory**: How do stock levels and consumption trends evolve across monthly snapshot cycles?
-9. **Rental Asset Fleet**: How many components are eligible for commercial rental equipment programs?
-
-### Module B: Procurement Analytics (For Procurement Managers)
-Evaluates supplier spend, purchase volume, delivery turnaround times, and fulfillment reliability:
-
-1. **PO Volume**: How many total purchase orders were issued across the operational year? *(100 POs)*
-2. **Net Procurement Spend**: What is the total spend on non-cancelled purchase orders?
-3. **Top Vendor Expenditure**: Which suppliers capture the largest share of procurement budget?
-4. **Frequently Procured Parts**: Which electronic components are reordered most frequently?
-5. **Monthly Purchasing Trend**: How does procurement expenditure vary month-over-month?
-6. **Fulfillment Status Pipeline**: What proportion of orders are Delivered, Pending, or Cancelled?
-7. **Delivery Lead Time**: What is the average lead time (in days) between order placement and receipt?
-8. **On-Time Delivery Rate (OTD %)**: What percentage of delivered purchase orders arrived on or before schedule?
-9. **Supplier Price Variance**: How do negotiated purchase prices for identical parts vary across different suppliers?
+Detailed ETL documentation is available in [**`03_Power_Query/transformation_documentation.md`**](03_Power_Query/transformation_documentation.md).
 
 ---
 
-## Core KPI Definitions & DAX Formulas
+## 14. Power BI Data Model
 
-All measures are documented in [`04_Power_BI/dax_measures.md`](04_Power_BI/dax_measures.md):
+The Power BI data model establishes a star/snowflake schema with single-direction 1-to-many relationships:
+- `Categories[CategoryID]` (1) $\rightarrow$ `Components[CategoryID]` (N)
+- `Components[ComponentID]` (1) $\rightarrow$ `InventorySnapshots[ComponentID]` (N)
+- `Components[ComponentID]` (1) $\rightarrow$ `PurchaseOrderDetails[ComponentID]` (N)
+- `Suppliers[SupplierID]` (1) $\rightarrow$ `PurchaseOrders[SupplierID]` (N)
+- `PurchaseOrders[PurchaseOrderID]` (1) $\rightarrow$ `PurchaseOrderDetails[PurchaseOrderID]` (N)
+- **Analytical Date Table**: A dedicated DAX `Date` table provides time-intelligence slicing across 2025.
+
+Detailed data modeling documentation is available in [**`04_Power_BI/data_model_documentation.md`**](04_Power_BI/data_model_documentation.md).
+
+---
+
+## 15. DAX and KPI Calculations
+
+Core measures implemented in Power BI:
 
 ```dax
 // 1. Total Inventory Valuation (₹)
@@ -208,14 +278,14 @@ SUMX(
     InventorySnapshots[QuantityOnHand] * RELATED( Components[StandardUnitCost] )
 )
 
-// 2. Zero-Stock Components Count
+// 2. Zero Stock Alert
 Zero Stock Components = 
 CALCULATE(
     DISTINCTCOUNT( InventorySnapshots[ComponentID] ),
     InventorySnapshots[QuantityOnHand] = 0
 )
 
-// 3. Low-Stock Components Alert (< Reorder Level)
+// 3. Low Stock Alert (< Reorder Level)
 Low Stock Components = 
 CALCULATE(
     DISTINCTCOUNT( InventorySnapshots[ComponentID] ),
@@ -247,7 +317,7 @@ CALCULATE(
     NOT ISBLANK( PurchaseOrders[ActualDeliveryDate] )
 )
 
-// 6. On-Time Delivery Rate (OTD %)
+// 6. Supplier On-Time Delivery Rate (OTD %)
 On-Time Delivery Rate (OTD %) = 
 DIVIDE(
     CALCULATE( COUNTROWS( PurchaseOrders ), PurchaseOrders[OrderStatus] = "Delivered" && PurchaseOrders[ActualDeliveryDate] <= PurchaseOrders[ExpectedDeliveryDate] ),
@@ -256,56 +326,50 @@ DIVIDE(
 )
 ```
 
+Complete DAX formulas and business logic are documented in [**`04_Power_BI/dax_measures.md`**](04_Power_BI/dax_measures.md).
+
 ---
 
-## Power BI Dashboard Pages
+## 16. Dashboard Overview
 
-The solution includes a multi-page interactive dashboard within [`04_Power_BI/Electronics_Inventory_Procurement.pbix`](04_Power_BI/):
+The interactive Power BI report (`04_Power_BI/Electronics_Inventory_Procurement.pbix`) features two dedicated analytical pages:
 
 ### Page 1: Inventory Analytics Dashboard
-- **Executive KPI Cards**: Total Inventory Valuation (₹), Total Units on Hand, Zero Stock Alerts, Low Stock Alerts, Rental Fleet Size.
-- **Stock Distribution by Category**: Clustered bar chart comparing piece quantity vs holding valuation across all 8 component categories.
-- **Monthly Stock Trajectory**: Area line chart tracking physical inventory volume and capital holding fluctuations across 12 monthly snapshot dates in 2025.
-- **Critical Stock Reorder Matrix**: Interactive table filtering parts below safety reorder levels, showing warehouse bin locations, condition status, and reorder deficits.
+- **Headline KPI Cards**: Total Inventory Value (₹), Total Stock Pieces, Low Stock Parts, Zero Stock Parts, Rental Fleet Count.
+- **Stock Distribution by Category**: Clustered bar visual comparing pieces on hand vs holding valuation across all 8 component categories.
+- **Monthly Stock Trajectory**: Area line visual displaying inventory holding trends across the 12 monthly snapshot dates.
+- **Critical Reorder Matrix**: Detailed table displaying parts below reorder levels, warehouse bin locations, condition status, and reorder deficits.
 
 ### Page 2: Procurement & Supplier Analytics Dashboard
-- **Executive KPI Cards**: Total PO Spend (₹), Total PO Count, Delivered Orders, Average Lead Time (Days), On-Time Delivery Rate (OTD %).
-- **Monthly Procurement Spend Trend**: Column chart displaying monthly purchasing expenditure over time.
-- **Vendor Performance Matrix**: Scatter plot correlating Supplier Spend vs Average Lead Time and On-Time Delivery %.
-- **Order Pipeline Breakdown**: Donut visual displaying proportions of Delivered (80%), Pending (12%), and Cancelled (8%) orders.
-- **Supplier Price Variance Table**: Detailed drill-down analyzing unit purchase cost variance against standard reference costs.
+- **Headline KPI Cards**: Total Procurement Spend (₹), Total POs, Delivered Orders, Average Lead Time (11.4 Days), On-Time Delivery Rate (76.25%).
+- **Monthly Procurement Spend**: Column chart tracking purchasing expenditure over the operational year.
+- **Supplier Performance Matrix**: Scatter plot correlating Supplier Spend vs Delivery Lead Time and OTD %.
+- **Order Pipeline Status**: Donut chart displaying Delivered (80%), Pending (12%), and Cancelled (8%) orders.
+- **Supplier Price Variance Table**: Comparison of actual unit purchase costs vs benchmark catalog standard costs.
 
 ---
 
-## Key Business Insights & Findings
+## 17. End-to-End Project Architecture
 
-1. **Capital Concentration**: `Microcontrollers & Dev Boards` and `Sensors` account for **~66% of total inventory valuation**, despite comprising only 28% of catalog part numbers.
-2. **Shortage Vulnerability**: An average of **9 to 11 components per month** dipped below safety thresholds, primarily driven by lead-time delays in semiconductor shipments.
-3. **Supplier Fulfillment Reliability**: Current On-Time Delivery (OTD) rate is **76.25%**, with an average lead time of **11.4 days**.
-4. **Spend Concentration**: The top 10 suppliers account for **~45% of total procurement spend**, indicating an opportunity for strategic volume discount renegotiation.
-
-Full analytical findings are detailed in [`05_Documentation/analysis_findings.md`](05_Documentation/analysis_findings.md).
-
----
-
-## Strategic Management Recommendations
-
-1. **Implement ABC-XYZ Stock Categorization**: Apply tight weekly audits on Class A high-value microcontrollers to free working capital, while buffering Class C low-cost passives to prevent line halts.
-2. **Automate Reorder Alerts**: Use Power BI visual threshold indicators to trigger purchase requisitions before parts reach zero stock.
-3. **Consolidate Vendor Volume**: Consolidate purchasing from 50 fragmented suppliers into the top 12 preferred vendors to capture 5–8% volume discounts.
-4. **Enforce Supplier SLAs**: Introduce contractual on-time fulfillment credits or penalty clauses for vendors with lead times exceeding 15 days.
-
-Full strategic guidance is detailed in [`05_Documentation/business_recommendations.md`](05_Documentation/business_recommendations.md).
+```mermaid
+flowchart TD
+    A["Microsoft Excel Source Workbook<br/>electronics_inventory_raw.xlsx (6 Worksheets)"]
+    --> B["Power Query ETL Pipeline<br/>Data Cleaning, Type Casting & Referential Checks"]
+    --> C["Power BI Data Model<br/>Star / Snowflake Schema Relationships"]
+    --> D["DAX Calculations & KPI Engine<br/>Valuation, Stock Alerts, Lead Time & OTD %"]
+    --> E["Interactive Power BI Dashboards<br/>Inventory & Procurement Reporting Pages"]
+    --> F["Business Insights & Management Recommendations<br/>Working Capital & Supplier Optimization"]
+```
 
 ---
 
-## Repository Structure
+## 18. Repository Structure
 
 ```text
 Electronics-Component-Analytics/
 │
 ├── README.md                            # Master project documentation
-├── PROJECT_CONTEXT.md                   # Business domain, personas & pure BI workflow
+├── PROJECT_CONTEXT.md                   # Developer & AI operational context
 ├── .gitignore                           # Cleaned rules (Power BI, Excel, OS, logs)
 │
 ├── 01_Project_Planning/
@@ -350,41 +414,83 @@ Electronics-Component-Analytics/
 
 ---
 
-## Quickstart & Replication Guide
+## 19. Technology Stack
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/shashaank747/Electronics-Component-Analytics.git
-cd Electronics-Component-Analytics
-```
-
-### 2. Inspect Raw Datasets in Microsoft Excel
-Open [`02_Dataset/raw/electronics_inventory_raw.xlsx`](02_Dataset/raw/electronics_inventory_raw.xlsx) to review the 6 relational worksheets:
-- `Categories`: 8 category definitions
-- `Components`: 105 component items with standard costs in Rupee (₹)
-- `Suppliers`: 50 supplier records across industrial cities
-- `InventorySnapshots`: 1,260 monthly observations across 2025
-- `PurchaseOrders`: 100 purchase orders (Delivered, Pending, Cancelled)
-- `PurchaseOrderDetails`: 125 line items with negotiated purchase prices (₹)
-
-### 3. Review Power Query ETL Transformations
-Refer to [`03_Power_Query/transformation_documentation.md`](03_Power_Query/transformation_documentation.md) for detailed M-language steps, type coercion, and null handling rules.
-
-### 4. Open the Power BI Dashboard
-1. Launch **Microsoft Power BI Desktop**.
-2. Open [`04_Power_BI/Electronics_Inventory_Procurement.pbix`](04_Power_BI/Electronics_Inventory_Procurement.pbix).
-3. If prompted to refresh data, confirm source points to `02_Dataset/raw/electronics_inventory_raw.xlsx`.
-4. Interact with the multi-page dashboards:
-   - **Page 1: Inventory Analytics Dashboard** (Valuation, stockout risk, category allocation, monthly trajectory)
-   - **Page 2: Procurement Analytics Dashboard** (Spend by supplier, lead time analysis, on-time delivery rate, order status breakdown)
+| Purpose | Technology | Implementation Details |
+| :--- | :--- | :--- |
+| **Source Data** | Microsoft Excel | Structured relational workbook (`electronics_inventory_raw.xlsx`) across 6 worksheets |
+| **Data Cleaning and ETL** | Power Query | Automated M-language transformations, type casting, date normalization, null handling |
+| **Data Modelling** | Microsoft Power BI Desktop | Star/snowflake schema design, 1-to-many single-direction relationships, conformed dimensions |
+| **Calculations** | DAX | Calculated measures for valuation, safety stock alerts, lead time, and delivery reliability |
+| **Visualization** | Microsoft Power BI Desktop | Executive dashboards, card KPIs, trend lines, matrix breakdowns, interactive slicers |
 
 ---
 
-## Project Scope & Deliverables
+## 20. Business Value
 
-> [!NOTE]
-> **Synthetic Data Disclaimer**: All records in this repository are 100% synthetic and generated specifically for data modeling and educational demonstration. No proprietary, sensitive, or real company data is used.
+### Inventory Management Benefits
+- **Eliminates Stockout Blindspots**: Immediate alert flags on low-stock and zero-stock components prevent line halts.
+- **Optimizes Working Capital**: Exposes that 66% of capital is tied up in microcontrollers and sensors, guiding tighter inventory control.
+- **Accurate Balance Sheet Valuation**: Provides real-time dynamic inventory valuation in INR (₹).
+- **Commercializes Idle Assets**: Identifies 16 rental-eligible prototyping boards for monetization.
 
-### In-Scope vs Excluded
-- **In-Scope**: Descriptive & diagnostic inventory analytics, supplier performance comparison, lead time tracking, inventory valuation in INR (₹), Power BI interactive dashboards.
-- **Excluded**: Real-time ERP transaction processing, live database servers, live WMS barcode/RFID scanning, manufacturing line defect analysis, and machine-learning predictive forecasting.
+### Procurement Management Benefits
+- **Objective Vendor Scorecards**: Replaces subjective supplier reviews with data on average lead times (11.4 days) and OTD rates (76.25%).
+- **Vendor Consolidation**: Identifies top suppliers capturing 45% of spend, creating leverage for volume discount renegotiations.
+- **Purchase Price Variance Control**: Benchmarks negotiated purchase costs against catalog standard costs to curb supplier price inflation.
+
+---
+
+## 21. Project Scope
+
+### Included Functionality
+- Excel-based synthetic operational dataset across 6 structured worksheets.
+- Automated data extraction and transformation using Power Query.
+- Relational dimensional modeling (Star/Snowflake) inside Power BI.
+- DAX KPI measures for inventory health, valuation, and procurement reliability.
+- Multi-page interactive Power BI dashboards with cross-filtering and slicers.
+- Comprehensive technical documentation and business findings.
+
+### Excluded Functionality
+- Live ERP transaction processing, automated PO generation, or EDI transmission.
+- Physical warehouse barcode or RFID hardware integration.
+- Payment processing, banking reconciliations, or invoice settlement tracking.
+- Manufacturing production scheduling or shop-floor execution.
+- Machine-learning predictive demand forecasting.
+- Live external database servers or third-party script engines.
+
+---
+
+## 22. Limitations
+
+1. **Synthetic Nature**: All records are 100% synthetic and generated for demonstration purposes.
+2. **Periodic Snapshots**: Inventory data represents monthly observations, not transaction-level perpetual movements.
+3. **Commitment Spend vs Cash Outlay**: Procurement value reflects purchase order line totals, not verified bank cash settlements.
+4. **Standard Costing Benchmark**: Valuation uses standard unit costs rather than rolling weighted average or FIFO/LIFO layers.
+5. **Analytical Scope**: The dashboard supports operational decision-making but does not execute business transactions.
+
+---
+
+## 23. How to Run or Explore the Project
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/shashaank747/Electronics-Component-Analytics.git
+   cd Electronics-Component-Analytics
+   ```
+2. **Review Source Data in Microsoft Excel**:
+   Open [`02_Dataset/raw/electronics_inventory_raw.xlsx`](02_Dataset/raw/electronics_inventory_raw.xlsx) to inspect the 6 worksheets.
+3. **Inspect Power Query Transformations**:
+   Review [`03_Power_Query/transformation_documentation.md`](03_Power_Query/transformation_documentation.md) for data extraction and cleaning logic.
+4. **Launch Power BI Dashboard**:
+   Open [`04_Power_BI/Electronics_Inventory_Procurement.pbix`](04_Power_BI/Electronics_Inventory_Procurement.pbix) in **Microsoft Power BI Desktop**.
+5. **Interact with Reports**:
+   Explore slicers (Snapshot Date, Category, Supplier, Status), cross-filtering, and drill-downs across the Inventory and Procurement dashboard pages.
+
+---
+
+## 24. Future Enhancements
+
+1. **Power BI Service Deployment**: Publish to cloud workspace with automated scheduled refresh and mobile report layouts.
+2. **Row-Level Security (RLS)**: Restrict data visibility based on category manager or regional purchasing officer roles.
+3. **Automated Alerting with Power Automate**: Trigger email/Teams notifications when components enter critical low-stock states.

@@ -1,56 +1,95 @@
-# Data Model Documentation
+# Power BI Data Model Documentation
 
-## Overview
-This document specifies the relational data model for the **Electronics Component Inventory and Procurement Analysis Dashboard** in Microsoft Power BI.
+## 1. Overview & Architecture
+This document specifies the relational data model constructed within **Microsoft Power BI Desktop** for the **Electronics Component Inventory & Procurement Analytics** dashboard.
 
-The model is designed using Power BI star/snowflake schema best practices to support both **Inventory Analytics** and **Procurement Analytics** with maximum VertiPaq compression performance and intuitive DAX modeling.
-
----
-
-## Schema Architecture
+The architecture employs dimensional modeling best practices—structuring tables into dimensions and fact tables to maximize VertiPaq memory compression and support intuitive, performant DAX evaluations.
 
 ```mermaid
 erDiagram
-    Categories ||--o{ Components : "1 to Many (1:N)"
-    Components ||--o{ InventorySnapshots : "1 to Many (1:N)"
-    Components ||--o{ PurchaseOrderDetails : "1 to Many (1:N)"
-    Suppliers ||--o{ PurchaseOrders : "1 to Many (1:N)"
-    PurchaseOrders ||--o{ PurchaseOrderDetails : "1 to Many (1:N)"
+    Categories ||--o{ Components : "1 : N (Single)"
+    Components ||--o{ InventorySnapshots : "1 : N (Single)"
+    Components ||--o{ PurchaseOrderDetails : "1 : N (Single)"
+    Suppliers ||--o{ PurchaseOrders : "1 : N (Single)"
+    PurchaseOrders ||--o{ PurchaseOrderDetails : "1 : N (Single)"
 ```
 
-### Table Classifications
+---
 
-| Table Name | Classification | Primary Key | Foreign Keys | Role / Description |
+## 2. Table Classifications & Roles
+
+| Table Name | Classification | Primary Key | Foreign Keys | Role in Model |
 | :--- | :--- | :--- | :--- | :--- |
-| `Categories` | Dimension | `CategoryID` | — | Component category master |
-| `Components` | Dimension / Conformed | `ComponentID` | `CategoryID` | Master electronic parts catalog |
-| `Suppliers` | Dimension | `SupplierID` | — | Vendor profiles and geographic distribution |
-| `InventorySnapshots` | Fact (Periodic Snapshot) | `SnapshotID` | `ComponentID` | Monthly inventory quantities on hand |
-| `PurchaseOrders` | Fact Header / Bridge | `PurchaseOrderID` | `SupplierID` | Order header dates, status, and fulfillment |
-| `PurchaseOrderDetails` | Fact (Transactional) | `POLineID` | `PurchaseOrderID`, `ComponentID` | Line-item quantities ordered and purchase prices (₹) |
+| **`Categories`** | Dimension | `CategoryID` | — | Component category attributes (`CategoryName`, `CategoryDescription`) |
+| **`Components`** | Conformed Dimension | `ComponentID` | `CategoryID` | Master component attributes, reorder levels, conditions, and standard costs (₹) |
+| **`Suppliers`** | Dimension | `SupplierID` | — | Vendor profiles, classifications, and geographic cities |
+| **`InventorySnapshots`** | Fact (Periodic Snapshot) | `SnapshotID` | `ComponentID` | Monthly recorded physical stock quantities across 12 observation dates |
+| **`PurchaseOrders`** | Fact Header / Bridge | `PurchaseOrderID` | `SupplierID` | Order-level header information, fulfillment dates, and order statuses |
+| **`PurchaseOrderDetails`**| Fact (Transactional) | `POLineID` | `PurchaseOrderID`, `ComponentID` | Line-item ordered quantities and actual negotiated unit purchase prices (₹) |
+| **`Date`** *(Analytical)* | Dedicated Dimension | `Date` | — | DAX-generated calendar table supporting time intelligence and trend slicing |
 
 ---
 
-## Relationships & Cardinality
+## 3. Relationships & Filter Propagation
 
-| From Table (Many) | To Table (One) | Active Key Relationship | Cardinality | Cross Filter Direction |
-| :--- | :--- | :--- | :---: | :---: |
-| `Components` | `Categories` | `CategoryID` → `CategoryID` | N : 1 | Single (`Categories` filters `Components`) |
-| `InventorySnapshots` | `Components` | `ComponentID` → `ComponentID` | N : 1 | Single (`Components` filters `InventorySnapshots`) |
-| `PurchaseOrders` | `Suppliers` | `SupplierID` → `SupplierID` | N : 1 | Single (`Suppliers` filters `PurchaseOrders`) |
-| `PurchaseOrderDetails` | `PurchaseOrders` | `PurchaseOrderID` → `PurchaseOrderID` | N : 1 | Single (`PurchaseOrders` filters `Details`) |
-| `PurchaseOrderDetails` | `Components` | `ComponentID` → `ComponentID` | N : 1 | Single (`Components` filters `Details`) |
+The data model features five core physical relationships connecting the six imported Excel tables:
+
+| One-Side Table (1) | Many-Side Table (N) | Join Key Column | Cardinality | Filter Direction | Active State |
+| :--- | :--- | :--- | :---: | :---: | :---: |
+| `Categories` | `Components` | `CategoryID` | $1 : N$ | Single (`Categories` filters `Components`) | Active |
+| `Components` | `InventorySnapshots` | `ComponentID` | $1 : N$ | Single (`Components` filters `Snapshots`) | Active |
+| `Components` | `PurchaseOrderDetails` | `ComponentID` | $1 : N$ | Single (`Components` filters `Details`) | Active |
+| `Suppliers` | `PurchaseOrders` | `SupplierID` | $1 : N$ | Single (`Suppliers` filters `PurchaseOrders`) | Active |
+| `PurchaseOrders` | `PurchaseOrderDetails` | `PurchaseOrderID` | $1 : N$ | Single (`PurchaseOrders` filters `Details`) | Active |
+
+### Design Considerations:
+- **Strict Single-Direction Filtering**: Filter context flows strictly from Dimension tables to Fact tables ($1 \rightarrow N$). Bidirectional filtering is deliberately avoided to eliminate ambiguous filter paths and ensure deterministic DAX calculation results.
+- **Conformed Component Dimension**: `Components` connects directly to both the Inventory fact (`InventorySnapshots`) and the Procurement fact (`PurchaseOrderDetails`), enabling seamless cross-domain analysis.
+- **Hidden Keys**: Primary and foreign key columns on fact tables are marked as hidden in Report View to guide report authors to use Dimension fields for slicing and grouping.
 
 ---
 
-## Star Schema Integrity Rules
+## 4. Analytical Date Dimension (DAX Calendar)
 
-1. **Single-Direction Filter Propagation**:
-   - Filter propagation strictly flows from dimension tables down to fact tables (`1 → Many`).
-   - Bidirectional filtering is avoided to maintain deterministic query evaluation and avoid relationship ambiguity.
+To support time intelligence, date slicers, and month-over-month trend visuals, a dedicated analytical **Date Table** is created inside Power BI using DAX:
 
-2. **Foreign Key Visibility**:
-   - Foreign key columns in fact tables (`ComponentID`, `PurchaseOrderID`, `SupplierID`) are hidden in the Power BI Report view to prevent users from accidentally aggregating key columns.
+```dax
+Date = 
+VAR MinDate = DATE( 2025, 1, 1 )
+VAR MaxDate = DATE( 2025, 12, 31 )
+RETURN
+    ADDCOLUMNS(
+        CALENDAR( MinDate, MaxDate ),
+        "Year", YEAR( [Date] ),
+        "Month Number", MONTH( [Date] ),
+        "Month Name", FORMAT( [Date], "MMMM" ),
+        "Month-Year", FORMAT( [Date], "MMM yyyy" ),
+        "Quarter", "Q" & FORMAT( [Date], "Q" ),
+        "Year-Quarter", FORMAT( [Date], "yyyy" ) & "-Q" & FORMAT( [Date], "Q" )
+    )
+```
 
-3. **Conformed Dimension**:
-   - The `Components` dimension acts as a conformed dimension connecting both the **Inventory Analytics** star and the **Procurement Analytics** star, enabling cross-domain analysis such as comparing current stock on hand against pending purchase orders.
+### Multiple Date Role Handling:
+The model contains multiple date fields across tables:
+- `InventorySnapshots[SnapshotDate]`
+- `PurchaseOrders[OrderDate]`
+- `PurchaseOrders[ExpectedDeliveryDate]`
+- `PurchaseOrders[ActualDeliveryDate]`
+
+**Best-Practice Implementation**:
+- The active relationship from `Date[Date]` connects to `PurchaseOrders[OrderDate]` to govern general procurement timeline slicing.
+- Inactive relationships are established to `PurchaseOrders[ExpectedDeliveryDate]` and `PurchaseOrders[ActualDeliveryDate]`, activated via `USERELATIONSHIP()` when evaluating delivery deadlines.
+- A dedicated active relationship connects `Date[Date]` to `InventorySnapshots[SnapshotDate]` for monthly inventory slicing.
+
+---
+
+## 5. Domain-Specific Calculation Considerations
+
+### A. Inventory Calculation Rules
+- **Snapshot Selection Context**: Because `InventorySnapshots` holds periodic monthly observations, aggregating `QuantityOnHand` across all dates without a date filter multiplies inventory counts. All current inventory measures must evaluate within a specific selected snapshot context.
+- **Valuation Reference**: Inventory valuation must always reference `Components[StandardUnitCost]`, which represents the standard benchmark cost, using `RELATED(Components[StandardUnitCost])`.
+
+### B. Procurement Calculation Rules
+- **Header vs Line Item Granularity**: Order status (`Delivered`, `Pending`, `Cancelled`) resides on `PurchaseOrders`, while quantities and prices reside on `PurchaseOrderDetails`. Total procurement spend must aggregate line items while evaluating header status.
+- **Cancelled Order Handling**: Cancelled purchase orders must be explicitly excluded from procurement spend measures, while pending orders must remain included because they represent active uncancelled commitments.
+- **Delivery Lead Time Restriction**: Lead time calculations (`ActualDeliveryDate - OrderDate`) must strictly filter for `OrderStatus = "Delivered"` and exclude rows with blank actual delivery dates.
